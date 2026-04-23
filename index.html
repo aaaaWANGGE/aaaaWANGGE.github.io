@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Ma · 马万新</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Serif+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-blue: #0a0e2e;
+            --night-blue: #1a1f5e;
+            --star-yellow: #f4d03f;
+            --golden: #e8a020;
+            --teal: #1abc9c;
+            --light-blue: #5dade2;
+            --text: #e8e0d0;
+            --card-bg: rgba(10, 20, 60, 0.65);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--deep-blue);
+            color: var(--text);
+            font-family: 'Noto Serif SC', serif;
+            overflow-x: hidden;
+        }
+
+        #starCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+        }
+
+        .content { position: relative; z-index: 1; }
+
+        /* ── Nav ── */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 14, 46, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(244, 208, 63, 0.15);
+        }
+
+        nav .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--star-yellow);
+            font-style: italic;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav ul a {
+            color: rgba(232, 224, 208, 0.75);
+            text-decoration: none;
+            font-size: 0.88rem;
+            letter-spacing: 0.06em;
+            transition: color 0.3s;
+        }
+
+        nav ul a:hover { color: var(--star-yellow); }
+
+        /* ── Hero ── */
+        #hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            gap: 1.2rem;
+        }
+
+        .hero-eyebrow {
+            font-size: 0.9rem;
+            letter-spacing: 0.3em;
+            color: var(--teal);
+            text-transform: uppercase;
+        }
+
+        .hero-name {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3.5rem, 9vw, 8rem);
+            color: var(--star-yellow);
+            line-height: 1;
+            text-shadow: 0 0 40px rgba(244, 208, 63, 0.4), 0 0 80px rgba(244, 208, 63, 0.15);
+            animation: glowPulse 5s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { text-shadow: 0 0 40px rgba(244, 208, 63, 0.4); }
+            50%       { text-shadow: 0 0 60px rgba(244, 208, 63, 0.7), 0 0 120px rgba(244, 208, 63, 0.25); }
+        }
+
+        .hero-sub {
+            font-size: 1.15rem;
+            color: var(--light-blue);
+            font-style: italic;
+            letter-spacing: 0.08em;
+        }
+
+        .hero-tags {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            padding: 0.35rem 0.9rem;
+            border: 1px solid rgba(244, 208, 63, 0.35);
+            border-radius: 20px;
+            font-size: 0.83rem;
+            color: rgba(244, 208, 63, 0.85);
+            background: rgba(244, 208, 63, 0.05);
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 2.5rem;
+            font-size: 0.8rem;
+            color: rgba(232, 224, 208, 0.3);
+            letter-spacing: 0.15em;
+            animation: bounce 2.5s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(8px); }
+        }
+
+        /* ── Sections ── */
+        section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--star-yellow);
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, rgba(244, 208, 63, 0.4), transparent);
+        }
+
+        /* ── Cards ── */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(244, 208, 63, 0.12);
+            border-radius: 14px;
+            padding: 2rem;
+            backdrop-filter: blur(12px);
+            transition: transform 0.35s, border-color 0.35s, box-shadow 0.35s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(244, 208, 63, 0.35);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.5rem; }
+
+        /* ── About ── */
+        .about-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .about-avatar-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .about-avatar {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 35%, #2a3580, var(--deep-blue));
+            border: 2px solid rgba(244, 208, 63, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4.5rem;
+            box-shadow: 0 0 40px rgba(244, 208, 63, 0.15);
+        }
+
+        .about-text p {
+            line-height: 1.95;
+            color: rgba(232, 224, 208, 0.82);
+            margin-bottom: 1rem;
+            font-size: 0.97rem;
+        }
+
+        /* ── Projects ── */
+        .project-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            color: var(--star-yellow);
+            margin-bottom: 0.8rem;
+        }
+
+        .project-card p {
+            line-height: 1.75;
+            font-size: 0.93rem;
+            color: rgba(232, 224, 208, 0.78);
+        }
+
+        .project-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.2rem; }
+
+        .tech-tag {
+            padding: 0.2rem 0.65rem;
+            background: rgba(26, 188, 156, 0.12);
+            border: 1px solid rgba(26, 188, 156, 0.28);
+            border-radius: 4px;
+            font-size: 0.78rem;
+            color: var(--teal);
+        }
+
+        /* ── Resume ── */
+        .resume-item {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid rgba(244, 208, 63, 0.07);
+        }
+
+        .resume-item:last-child { border-bottom: none; }
+
+        .resume-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--star-yellow);
+            margin-top: 6px;
+            flex-shrink: 0;
+            box-shadow: 0 0 8px rgba(244, 208, 63, 0.5);
+        }
+
+        .resume-year {
+            font-size: 0.8rem;
+            color: var(--teal);
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            margin-top: 3px;
+        }
+
+        .resume-title { font-size: 1rem; color: var(--text); margin-bottom: 0.25rem; }
+
+        .resume-desc {
+            font-size: 0.88rem;
+            color: rgba(232, 224, 208, 0.55);
+            line-height: 1.6;
+        }
+
+        /* ── Skills ── */
+        .skill-item { margin-bottom: 1.3rem; }
+
+        .skill-name {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.4rem;
+            font-size: 0.93rem;
+        }
+
+        .skill-name span:last-child { color: rgba(232,224,208,0.45); font-size: 0.82rem; }
+
+        .skill-bar {
+            height: 5px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .skill-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--teal), var(--star-yellow));
+            border-radius: 3px;
+            width: 0;
+            transition: width 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* ── Life ── */
+        .sop-item {
+            display: flex;
+            align-items: baseline;
+            gap: 1.2rem;
+            padding: 0.85rem 0;
+            border-bottom: 1px solid rgba(244, 208, 63, 0.06);
+        }
+
+        .sop-time {
+            color: var(--star-yellow);
+            font-size: 0.82rem;
+            font-family: monospace;
+            min-width: 50px;
+        }
+
+        .hobby-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+
+        .hobby-cell {
+            text-align: center;
+            padding: 1.1rem 0.5rem;
+            background: rgba(244, 208, 63, 0.04);
+            border: 1px solid rgba(244, 208, 63, 0.1);
+            border-radius: 10px;
+            font-size: 0.82rem;
+            line-height: 1.8;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .hobby-cell:hover {
+            background: rgba(244, 208, 63, 0.09);
+            border-color: rgba(244, 208, 63, 0.3);
+        }
+
+        .hobby-cell .emoji { font-size: 1.6rem; display: block; }
+
+        /* ── Thoughts ── */
+        .thought {
+            position: relative;
+            padding: 1.4rem 1.6rem;
+            background: rgba(10, 14, 46, 0.55);
+            border-left: 3px solid var(--star-yellow);
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 1.1rem;
+            font-style: italic;
+            line-height: 1.85;
+            font-size: 0.97rem;
+            color: rgba(232, 224, 208, 0.85);
+            transition: background 0.3s;
+        }
+
+        .thought:hover { background: rgba(15, 25, 70, 0.7); }
+
+        .thought-placeholder {
+            border-color: rgba(232,224,208,0.15);
+            color: rgba(232,224,208,0.3);
+            font-size: 0.88rem;
+        }
+
+        /* ── Contact ── */
+        .contact-links { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+        .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.4rem;
+            border: 1px solid rgba(244, 208, 63, 0.28);
+            border-radius: 8px;
+            color: rgba(232, 224, 208, 0.8);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            background: rgba(244, 208, 63, 0.03);
+        }
+
+        .contact-link:hover {
+            background: rgba(244, 208, 63, 0.1);
+            border-color: var(--star-yellow);
+            color: var(--star-yellow);
+            transform: translateY(-2px);
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 3rem;
+            color: rgba(232, 224, 208, 0.25);
+            font-size: 0.82rem;
+            border-top: 1px solid rgba(244, 208, 63, 0.07);
+        }
+
+        /* ── Reveal ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .about-layout { grid-template-columns: 1fr; }
+            .about-avatar-wrap { flex-direction: row; }
+            nav ul { display: none; }
+            section { padding: 4rem 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="starCanvas"></canvas>
+
+<div class="content">
+
+    <!-- Nav -->
+    <nav>
+        <div class="logo">Magic Ma</div>
+        <ul>
+            <li><a href="#about">关于</a></li>
+            <li><a href="#projects">项目</a></li>
+            <li><a href="#resume">简历</a></li>
+            <li><a href="#skills">技能</a></li>
+            <li><a href="#life">生活</a></li>
+            <li><a href="#thoughts">奇思</a></li>
+            <li><a href="#contact">联系</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <div id="hero" style="position:relative;">
+        <div class="hero-eyebrow">Hardware Engineer in the Making</div>
+        <div class="hero-name">Magic Ma</div>
+        <div class="hero-sub">马万新 · 用代码丈量电路，用星空丈量梦想</div>
+        <div class="hero-tags">
+            <span class="tag">⚡ FPGA / 硬件</span>
+            <span class="tag">🎓 研究生在读</span>
+            <span class="tag">🎾 网球</span>
+            <span class="tag">🇩🇪 德语学习中</span>
+            <span class="tag">🇰🇷 韩语学习中</span>
+            <span class="tag">💭 爱思考</span>
+        </div>
+        <div class="scroll-hint">↓ &nbsp; scroll</div>
+    </div>
+
+    <!-- About -->
+    <section id="about" class="reveal">
+        <h2 class="section-title">关于我</h2>
+        <div class="about-layout">
+            <div class="about-avatar-wrap">
+                <div class="about-avatar">🌟</div>
+            </div>
+            <div class="card about-text">
+                <p>你好，我是马万新，英文名 Magic Ma。目前是一名硬件方向的研究生，正在探索 FPGA、嵌入式系统与数字电路的世界。</p>
+                <p>我相信工程师不只是写代码的人，更是用技术理解世界、改变世界的人。梦想是成为一名真正的硬件工程师，让每一块芯片都承载意义。</p>
+                <p>业余时间，我打网球、学语言、写下各种奇奇怪怪的想法——因为一个只有技术的人生，太单调了。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="reveal">
+        <h2 class="section-title">项目展示</h2>
+        <div class="grid-2">
+            <div class="card project-card">
+                <h3>⚡ Zynq 数据压缩加速器</h3>
+                <p>基于 Xilinx Zynq 平台的硬件压缩系统，使用 Verilog 实现数据编码与输出模块，探索 FPGA 在数据处理中的并行加速潜力。</p>
+                <div class="project-tags">
+                    <span class="tech-tag">Verilog</span>
+                    <span class="tech-tag">Zynq</span>
+                    <span class="tech-tag">FPGA</span>
+                    <span class="tech-tag">Vivado</span>
+                </div>
+            </div>
+            <div class="card project-card">
+                <h3>📡 研究生课题（进行中）</h3>
+                <p>硬件方向研究课题，目前处于开题阶段。聚焦前沿硬件架构设计与实现，探索工程边界。</p>
+                <div class="project-tags">
+                    <span class="tech-tag">研究中</span>
+                    <span class="tech-tag">硬件架构</span>
+                    <span class="tech-tag">2026</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resume -->
+    <section id="resume" class="reveal">
+        <h2 class="section-title">简历</h2>
+        <div class="card">
+            <div class="resume-item">
+                <div class="resume-dot"></div>
+                <div>
+                    <div class="resume-year">2024 — 至今</div>
+                    <div class="resume-title">硬件方向研究生 · 在读</div>
+                    <div class="resume-desc">研究方向：FPGA / 数字系统设计。开题阶段，探索硬件加速与嵌入式架构。</div>
+                </div>
+            </div>
+            <div class="resume-item">
+                <div class="resume-dot"></div>
+                <div>
+                    <div class="resume-year">2026 春季</div>
+                    <div class="resume-title">暑期实习求职 · 硬件方向</div>
+                    <div class="resume-desc">目标岗位：FPGA 工程师 / 数字电路工程师。目标公司：华为海思、联发科等半导体头部企业。</div>
+                </div>
+            </div>
+            <div class="resume-item" style="border-bottom:none;">
+                <div class="resume-dot"></div>
+                <div>
+                    <div class="resume-year">本科</div>
+                    <div class="resume-title">电子 / 硬件相关专业</div>
+                    <div class="resume-desc">打下数字电路、模拟电路、信号处理的基础，开始接触 FPGA 开发。</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills -->
+    <section id="skills" class="reveal">
+        <h2 class="section-title">技能</h2>
+        <div class="grid-2">
+            <div class="card">
+                <h3 style="color:var(--teal); margin-bottom:1.5rem; font-family:'Playfair Display',serif;">硬件 / 工程</h3>
+                <div class="skill-item">
+                    <div class="skill-name"><span>Verilog / VHDL</span><span>熟练</span></div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name"><span>FPGA 开发（Zynq）</span><span>熟练</span></div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="80"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name"><span>数字电路设计</span><span>熟练</span></div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="80"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name"><span>时序分析 / CDC</span><span>进阶中</span></div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="65"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name"><span>嵌入式系统</span><span>进阶中</span></div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="65"></div></div>
+                </div>
+            </div>
+            <div class="card">
+                <h3 style="color:var(--teal); margin-bottom:1.5rem; font-family:'Playfair Display',serif;">语言</h3>
+                <div class="skill-item">
+                    <div class="skill-name"><span>中文</span><span>母语</span></div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="100"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name"><span>英语</span><span>专业应用</span></div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="75"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name"><span>韩语 🇰🇷</span><span>入门中（延世）</span></div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="20"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name"><span>德语 🇩🇪</span><span>入门中（Nicos Weg）</span></div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="10"></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Life -->
+    <section id="life" class="reveal">
+        <h2 class="section-title">生活方式</h2>
+        <div class="grid-2">
+            <div class="card">
+                <h3 style="color:var(--star-yellow); margin-bottom:1.2rem; font-family:'Playfair Display',serif;">📅 日常节奏</h3>
+                <div class="sop-item"><span class="sop-time">06:00</span><span>网球晨练，清醒身体</span></div>
+                <div class="sop-item"><span class="sop-time">08:30</span><span>求职投递，抓住窗口期</span></div>
+                <div class="sop-item"><span class="sop-time">13:00</span><span>论文深度工作</span></div>
+                <div class="sop-item"><span class="sop-time">15:30</span><span>德语 → 韩语，各个击破</span></div>
+                <div class="sop-item"><span class="sop-time">20:00</span><span>求职复盘，整理进度</span></div>
+                <div class="sop-item"><span class="sop-time">21:00</span><span>全身拉伸，过渡睡眠</span></div>
+                <div class="sop-item" style="border:none;"><span class="sop-time">22:00</span><span>睡觉，满满 8 小时</span></div>
+            </div>
+            <div class="card">
+                <h3 style="color:var(--star-yellow); margin-bottom:1.2rem; font-family:'Playfair Display',serif;">🎯 爱好 & 娱乐</h3>
+                <div class="hobby-grid">
+                    <div class="hobby-cell"><span class="emoji">🎾</span>网球</div>
+                    <div class="hobby-cell"><span class="emoji">🇩🇪</span>德语</div>
+                    <div class="hobby-cell"><span class="emoji">🇰🇷</span>韩语</div>
+                    <div class="hobby-cell"><span class="emoji">💭</span>思考</div>
+                    <div class="hobby-cell"><span class="emoji">⚡</span>硬件</div>
+                    <div class="hobby-cell"><span class="emoji">🌌</span>星空</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Thoughts -->
+    <section id="thoughts" class="reveal">
+        <h2 class="section-title">奇思妙想</h2>
+        <div class="thought">"硬件是有温度的——每一个时序约束背后，都是真实世界的物理极限。"</div>
+        <div class="thought">"学一门语言，就是多拥有一种思维方式。我在用德语和韩语重新认识世界。"</div>
+        <div class="thought">"最好的作息不是最高效的，而是你能持续执行一年的那个。"</div>
+        <div class="thought">"打网球的时候，脑子里什么都没有——这就是它的价值所在。"</div>
+        <div class="thought thought-placeholder">✏️ 持续更新中……</div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="reveal">
+        <h2 class="section-title">联系我</h2>
+        <div class="card" style="max-width:620px;">
+            <p style="margin-bottom:1.8rem; line-height:1.9; color:rgba(232,224,208,0.65); font-size:0.95rem;">
+                无论是硬件技术探讨、实习机会交流，还是只是想聊聊——随时欢迎。
+            </p>
+            <div class="contact-links">
+                <a href="https://github.com/aaaaWANGGE" class="contact-link" target="_blank">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    GitHub
+                </a>
+                <a href="mailto:your@email.com" class="contact-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    邮件联系
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 Magic Ma &nbsp;·&nbsp; 用梵高的色彩，画工程师的星空</p>
+    </footer>
+
+</div>
+
+<script>
+/* ── Starry Night Canvas ── */
+const canvas = document.getElementById('starCanvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Star {
+    constructor() { this.init(); }
+    init() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.r = Math.random() * 1.8 + 0.3;
+        this.baseAlpha = Math.random() * 0.7 + 0.2;
+        this.twinkleSpeed = Math.random() * 0.025 + 0.008;
+        this.twinkleOffset = Math.random() * Math.PI * 2;
+        this.hue = Math.random() > 0.65
+            ? (Math.random() > 0.5 ? 48 : 200)
+            : 0;
+        this.sat = this.hue === 0 ? 0 : 70;
+    }
+    draw(t) {
+        const a = this.baseAlpha * (0.65 + 0.35 * Math.sin(t * this.twinkleSpeed + this.twinkleOffset));
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${this.hue}, ${this.sat}%, 85%, ${a})`;
+        ctx.fill();
+        if (this.r > 1.2) {
+            const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r * 4);
+            g.addColorStop(0, `hsla(${this.hue}, ${this.sat}%, 85%, ${a * 0.25})`);
+            g.addColorStop(1, 'transparent');
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r * 4, 0, Math.PI * 2);
+            ctx.fillStyle = g;
+            ctx.fill();
+        }
+    }
+}
+
+class Swirl {
+    constructor() {
+        this.cx = Math.random() * canvas.width;
+        this.cy = Math.random() * canvas.height;
+        this.maxR = Math.random() * 200 + 80;
+        this.speed = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 0.004 + 0.001);
+        this.phase = Math.random() * Math.PI * 2;
+        this.hue = Math.random() > 0.5 ? 220 : 45;
+        this.alpha = Math.random() * 0.03 + 0.008;
+    }
+    draw(t) {
+        this.phase += this.speed;
+        ctx.beginPath();
+        for (let i = 0; i <= 120; i++) {
+            const pct = i / 120;
+            const angle = this.phase + pct * Math.PI * 6;
+            const r = this.maxR * pct;
+            const x = this.cx + Math.cos(angle) * r;
+            const y = this.cy + Math.sin(angle) * r * 0.6;
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = `hsla(${this.hue}, 65%, 65%, ${this.alpha})`;
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+    }
+}
+
+const stars = Array.from({ length: 200 }, () => new Star());
+const swirls = Array.from({ length: 7 }, () => new Swirl());
+
+function drawBg() {
+    const g = ctx.createRadialGradient(
+        canvas.width * 0.25, canvas.height * 0.2, 0,
+        canvas.width * 0.5, canvas.height * 0.6, canvas.width
+    );
+    g.addColorStop(0, '#1c2260');
+    g.addColorStop(0.4, '#0f163a');
+    g.addColorStop(1, '#080c22');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+let t = 0;
+(function loop() {
+    t++;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBg();
+    swirls.forEach(s => s.draw(t));
+    stars.forEach(s => s.draw(t));
+    requestAnimationFrame(loop);
+})();
+
+/* ── Scroll Reveal ── */
+const revealObs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+/* ── Skill Bars ── */
+const skillObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.querySelectorAll('.skill-fill').forEach(bar => {
+                bar.style.width = bar.dataset.width + '%';
+            });
+        }
+    });
+}, { threshold: 0.2 });
+document.querySelectorAll('#skills').forEach(el => skillObs.observe(el));
+</script>
+
+</body>
+</html>
